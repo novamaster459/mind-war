@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Global War Room theme                                              */
+/* ------------------------------------------------------------------ */
+:root {
+  color-scheme: dark;
+  --wrt-scan: rgba(74, 222, 128, 0.04);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: #0a0e14;
+  background-image:
+    linear-gradient(var(--wrt-scan) 1px, transparent 1px),
+    linear-gradient(90deg, var(--wrt-scan) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: #e2e8f0;
+  font-family: 'Rajdhani', 'Orbitron', system-ui, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Subtle CRT scanline overlay across the whole app */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.08) 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* ------------------------------------------------------------------ */
+/* Utility component classes                                          */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .panel {
+    @apply bg-slate-850/80 border border-slate-700 rounded-lg backdrop-blur-sm shadow-inset-panel;
+  }
+
+  .panel-title {
+    @apply text-xs uppercase tracking-[0.25em] text-slate-600 font-semibold px-3 py-2 border-b border-slate-700/70;
+  }
+
+  .btn-tac {
+    @apply px-4 py-2 rounded-md border font-semibold uppercase tracking-wider text-sm
+           transition-all duration-150 active:scale-95 cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply btn-tac bg-coalition/15 border-coalition/60 text-coalition hover:bg-coalition/25 hover:shadow-glow-cyan;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono uppercase tracking-wide border;
+  }
+}
+
+/* Scrollbar theming */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #26334a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Utility for hiding scrollbars on touch carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Allow disabling the CRT overlay via settings */
+body.no-scanlines::after {
+  display: none;
+}
+
+/* Screen shake for heavy hits */
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-4px, 2px); }
+  40% { transform: translate(4px, -2px); }
+  60% { transform: translate(-3px, -2px); }
+  80% { transform: translate(3px, 2px); }
+}
+.shake {
+  animation: screen-shake 0.35s ease-in-out;
+}
