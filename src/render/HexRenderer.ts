@@ -56,6 +56,13 @@ export class HexRenderer {
   private unitLayer = new Container();
   private host: HTMLElement | null = null;
   private map: BoardMap | null = null;
+  /** True once `app.init()` has resolved and the Pixi renderer exists. */
+  private ready = false;
+  /** True once init finished wiring the canvas + listeners. */
+  private initialized = false;
+  /** Map requested before init finished; applied as soon as it's ready. */
+  private pendingMap: BoardMap | null = null;
+  private destroyed = false;
   private callbacks: RendererCallbacks;
 
   // Interaction state
@@ -88,6 +95,13 @@ export class HexRenderer {
       resolution: Math.min(window.devicePixelRatio || 1, 2),
       autoDensity: true,
     });
+    // The component may have unmounted while init was awaiting.
+    if (this.destroyed) {
+      this.app.destroy(true, { children: true });
+      return;
+    }
+    this.ready = true;
+    this.initialized = true;
     host.appendChild(this.app.canvas);
     this.app.canvas.style.display = 'block';
     this.app.canvas.style.touchAction = 'none';
@@ -126,6 +140,14 @@ export class HexRenderer {
     // Render loop (kept for future animations: pulses, fog shimmer, movement tweens).
     this.app.ticker.add(() => this.camera.applyTo(this.world));
     this.camera.applyTo(this.world);
+
+    // A map may have been requested before the renderer existed (React effects
+    // run before the async init resolves). Apply it now.
+    if (this.pendingMap) {
+      const m = this.pendingMap;
+      this.pendingMap = null;
+      this.setMap(m);
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -133,6 +155,12 @@ export class HexRenderer {
   // -------------------------------------------------------------------------
   setMap(map: BoardMap): void {
     this.map = map;
+    // The Pixi renderer doesn't exist until init() resolves. Stash the map and
+    // apply it there instead of touching app.screen (which would throw).
+    if (!this.ready) {
+      this.pendingMap = map;
+      return;
+    }
     this.drawBoard();
     this.drawNodes();
 
@@ -475,13 +503,23 @@ export class HexRenderer {
   }
 
   destroy(): void {
-    const c = this.app.canvas;
-    c.removeEventListener('pointerdown', this.onPointerDown);
-    c.removeEventListener('pointermove', this.onPointerMove);
-    window.removeEventListener('pointerup', this.onPointerUp);
-    c.removeEventListener('wheel', this.onWheel);
+    // Idempotent + safe to call before init() resolves (React StrictMode
+    // unmounts effects immediately after mounting them).
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.ready = false;
+
+    if (!this.host) return;
     if (this.keyHandler) window.removeEventListener('keydown', this.keyHandler);
     this.resizeObs?.disconnect();
-    this.app.destroy(true, { children: true });
+
+    if (this.initialized) {
+      const c = this.app.canvas;
+      c.removeEventListener('pointerdown', this.onPointerDown);
+      c.removeEventListener('pointermove', this.onPointerMove);
+      window.removeEventListener('pointerup', this.onPointerUp);
+      c.removeEventListener('wheel', this.onWheel);
+      this.app.destroy(true, { children: true });
+    }
   }
 }

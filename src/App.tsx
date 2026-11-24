@@ -5,6 +5,7 @@ import { SkirmishSetup } from './ui/screens/SkirmishSetup';
 import { LobbyScreen } from './ui/screens/LobbyScreen';
 import { BattleScreen } from './ui/screens/BattleScreen';
 import { SettingsScreen } from './ui/screens/SettingsScreen';
+import { ErrorBoundary } from './ui/components/ErrorBoundary';
 
 function ScreenRouter() {
   const screen = useAppStore((s) => s.screen);
@@ -43,7 +44,15 @@ export default function App() {
 
   return (
     <div className="h-full w-full">
-      <ScreenRouter />
+      <ErrorBoundary
+        onReset={() => {
+          // A crashed battle screen can't be recovered in place; send the
+          // player back to the menu where they can start a fresh match.
+          useAppStore.getState().go('menu');
+        }}
+      >
+        <ScreenRouter />
+      </ErrorBoundary>
     </div>
   );
 }

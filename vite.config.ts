@@ -14,6 +14,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Serve the web manifest in dev too — otherwise the <link rel="manifest">
+      // 404s and falls through to the SPA index.html (manifest parse error).
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
         name: 'War Room Tactics',

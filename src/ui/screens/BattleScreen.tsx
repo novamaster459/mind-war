@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAppStore } from '../../state/appStore';
 import { useMatchStore } from '../../state/matchStore';
 import { useHexRenderer } from '../../render/useHexRenderer';
@@ -229,11 +229,8 @@ export function BattleScreen() {
     go('menu');
   };
 
-  const selUnitObj = useMemo(
-    () => game.units.find((u) => u.id === selectedUnit) ?? null,
-    [game, selectedUnit],
-  );
-
+  // Derived values (plain consts — must NOT be hooks after the early return).
+  const selUnitObj = game.units.find((u) => u.id === selectedUnit) ?? null;
   const oppSeat = mySeat === 0 ? 1 : 0;
   const opponent = game.players[oppSeat];
 

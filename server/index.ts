@@ -89,18 +89,50 @@ const httpServer = createServer((req, res) => {
 
   const SERVE_DIST = process.env.SERVE_DIST === '1';
   const distDir = resolve(process.cwd(), 'dist');
+
+  // Minimal extension -> Content-Type map. Without this, browsers refuse
+  // module scripts and the service worker ("not a JavaScript-or-Wasm module").
+  const MIME: Record<string, string> = {
+    '.html': 'text/html; charset=utf-8',
+    '.js': 'text/javascript; charset=utf-8',
+    '.mjs': 'text/javascript; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.json': 'application/json; charset=utf-8',
+    '.webmanifest': 'application/manifest+json; charset=utf-8',
+    '.svg': 'image/svg+xml',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.webp': 'image/webp',
+    '.ico': 'image/x-icon',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+    '.mp3': 'audio/mpeg',
+    '.wav': 'audio/wav',
+    '.ogg': 'audio/ogg',
+    '.txt': 'text/plain; charset=utf-8',
+    '.map': 'application/json; charset=utf-8',
+  };
+
   if (SERVE_DIST && existsSync(distDir)) {
     let urlPath = (req.url || '/').split('?')[0];
     if (urlPath === '/') urlPath = '/index.html';
     // Prevent path traversal.
     const filePath = join(distDir, urlPath.replace(/^\/+/, ''));
     if (filePath.startsWith(distDir) && existsSync(filePath)) {
-      res.writeHead(200);
+      const ext = filePath.slice(filePath.lastIndexOf('.'));
+      res.writeHead(200, {
+        'content-type': MIME[ext] ?? 'application/octet-stream',
+        // Hashed build assets are immutable; index.html must always revalidate.
+        'cache-control': urlPath.startsWith('/assets/')
+          ? 'public, max-age=31536000, immutable'
+          : 'no-cache',
+      });
       res.end(readFileSafe(filePath));
       return;
     }
     // SPA fallback.
-    res.writeHead(200, { 'content-type': 'text/html' });
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-cache' });
     res.end(readFileSafe(join(distDir, 'index.html')));
     return;
   }

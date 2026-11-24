@@ -27,3 +27,6 @@ coverage/
 
 # Node/tsx compile cache
 .tmp/
+
+# TypeScript incremental build info
+*.tsbuildinfo

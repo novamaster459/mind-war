@@ -1,6 +1,7 @@
 // ============================================================================
 // React hook that mounts the PixiJS HexRenderer into a div and keeps it in sync.
-// Phase 3 will feed live game state; for Phase 2 it manages map + selection.
+// The renderer's init() is async, so state pushed during the first frames is
+// buffered by the renderer itself (see HexRenderer.setMap / pendingMap).
 // ============================================================================
 import { useEffect, useRef } from 'react';
 import { HexRenderer } from './HexRenderer';
@@ -17,9 +18,11 @@ interface Options {
 export function useHexRenderer({ map, onHover, onSelect, onZoom }: Options) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<HexRenderer | null>(null);
-  // Keep latest callbacks in refs so we don't re-init on every render.
+  // Keep latest callbacks + map in refs so we don't re-init on every render.
   const cb = useRef({ onHover, onSelect, onZoom });
   cb.current = { onHover, onSelect, onZoom };
+  const latestMap = useRef<BoardMap | null>(map);
+  latestMap.current = map;
 
   useEffect(() => {
     let disposed = false;
@@ -34,11 +37,10 @@ export function useHexRenderer({ map, onHover, onSelect, onZoom }: Options) {
     rendererRef.current = renderer;
 
     renderer.init(host).then(() => {
-      if (disposed) {
-        renderer.destroy();
-        return;
-      }
-      if (map) renderer.setMap(map);
+      if (disposed) return;
+      // init() applies any map that arrived early; this covers the case where
+      // the map became available *after* init resolved.
+      if (latestMap.current) renderer.setMap(latestMap.current);
     });
 
     return () => {
