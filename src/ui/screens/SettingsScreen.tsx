@@ -1,6 +1,7 @@
 import { useAppStore } from '../../state/appStore';
 import { WarRoomBackground } from '../components/WarRoomBackground';
 import { audio } from '../../audio/AudioEngine';
+import { BUILD_ID, BUILD_DATE, BUILD_LABEL, forceRefresh } from '../../buildInfo';
 
 function Slider({
   label,
@@ -101,6 +102,24 @@ export function SettingsScreen() {
           <Toggle label="Screen Shake" checked={settings.screenShake} onChange={(b) => update({ screenShake: b })} />
           <Toggle label="CRT Scanlines" checked={settings.showScanlines} onChange={(b) => update({ showScanlines: b })} />
           <Toggle label="Reduce Motion" checked={settings.reduceMotion} onChange={(b) => update({ reduceMotion: b })} />
+        </div>
+
+        <div className="mt-6 border-t border-slate-700 pt-4">
+          <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-slate-500">
+            <span>{BUILD_LABEL}</span>
+            <span title={BUILD_DATE}>{BUILD_ID}</span>
+          </div>
+          <p className="mt-1 font-mono text-[10px] text-slate-600">
+            If the game looks stuck on an old version, force a clean reload.
+          </p>
+          <button
+            className="btn-tac mt-2 w-full border-amber-500/40 text-amber-300"
+            onClick={() => {
+              void forceRefresh();
+            }}
+          >
+            ⟳ Force Refresh (clear cached build)
+          </button>
         </div>
 
         <p className="mt-6 font-mono text-xs leading-relaxed text-slate-600">

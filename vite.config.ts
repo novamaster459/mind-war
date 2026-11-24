@@ -3,8 +3,20 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
 
+// Unique id for this build: env override, else a compact UTC timestamp.
+const BUILD_ID = (
+  process.env.BUILD_ID ?? new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14)
+);
+const BUILD_DATE = process.env.BUILD_DATE ?? new Date().toISOString();
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  // Build stamp: injected into the bundle + PWA manifest/cache id so you can
+  // always tell which build is actually running in the browser.
+  define: {
+    __BUILD_ID__: JSON.stringify(BUILD_ID),
+    __BUILD_DATE__: JSON.stringify(BUILD_DATE),
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -45,6 +57,11 @@ export default defineConfig({
         categories: ['games', 'strategy'],
       },
       workbox: {
+        // Bump the cache id per build so a new deploy never serves stale files.
+        cacheId: `wrt-${BUILD_ID}`,
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         // Cache app shell, JS/CSS, images and audio so the game runs offline.
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,mp3,wav,ogg,json}'],
         navigateFallback: '/index.html',

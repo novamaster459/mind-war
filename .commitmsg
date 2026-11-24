@@ -1,0 +1,24 @@
+Add visible build stamp + cache-busting PWA update (build 20261124-1100)
+
+Why: the deploy-crash fix was verified in a clean browser but a browser
+holding an old service worker keeps serving the old bundle, so it looks
+like the update never landed. There was no way to tell which build was
+actually running.
+
+- vite: inject __BUILD_ID__ / __BUILD_DATE__ at build time, and derive the
+  Workbox cacheId (`wrt-<buildid>`) + manifest name from it. Every deploy
+  now gets a unique cache id, so Workbox installs a fresh cache and
+  cleanupOutdatedCaches drops the old one.
+- vite: skipWaiting + clientsClaim so a new SW takes control immediately
+  instead of waiting for every tab to close.
+- src/buildInfo.ts: BUILD_ID / BUILD_DATE / BUILD_LABEL helpers plus
+  forceRefresh(), which unregisters all service workers, deletes every
+  cache and hard-reloads.
+- MainMenu footer: shows BUILD_LABEL + raw id (hover for the date).
+- Settings: shows the build stamp and a "Force Refresh (clear cached
+  build)" escape hatch for when a stale cache is stuck.
+- Untrack nothing else; dist is still gitignored.
+
+Build stamp for this build: BUILD 20261124-1100 (20261124110047).
+If the menu footer does not show this string, the browser is running a
+cached build — use Settings > Force Refresh.

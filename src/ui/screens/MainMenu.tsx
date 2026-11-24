@@ -3,6 +3,7 @@ import { useAppStore } from '../../state/appStore';
 import { WarRoomBackground } from '../components/WarRoomBackground';
 import { FACTION_LIST, FactionBadge, type FactionMeta } from '../components/FactionBadge';
 import { audio } from '../../audio/AudioEngine';
+import { BUILD_ID, BUILD_DATE, BUILD_LABEL } from '../../buildInfo';
 
 export function MainMenu() {
   const go = useAppStore((s) => s.go);
@@ -97,7 +98,8 @@ export function MainMenu() {
           <span>•</span>
           <span>OFFLINE READY</span>
           <span>•</span>
-          <span>BUILD 0.1.0</span>
+          <span>{BUILD_LABEL}</span>
+          <span title={BUILD_DATE}>{BUILD_ID}</span>
         </div>
       </div>
     </div>
