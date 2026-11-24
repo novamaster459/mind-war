@@ -13,6 +13,7 @@ import { PowerBar } from '../components/PowerBar';
 import { ProductionQueue } from '../components/ProductionQueue';
 import { playTurn } from '../../game/ai/bot';
 import { useBattleController } from './useBattleController';
+import { BUILD_LABEL } from '../../buildInfo';
 
 export function BattleScreen() {
   const go = useAppStore((s) => s.go);
@@ -197,8 +198,17 @@ export function BattleScreen() {
 
   if (!game || !me) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-slate-950 text-slate-500">
-        Initializing battlefield…
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-slate-950 text-slate-500">
+        <div className="font-mono text-sm uppercase tracking-widest">Initializing battlefield…</div>
+        <div className="font-mono text-[10px] text-slate-600">{BUILD_LABEL}</div>
+        <button
+          className="btn-tac border-slate-700 text-slate-400"
+          onClick={() => {
+            void import('../../buildInfo').then((m) => m.forceRefresh());
+          }}
+        >
+          Clear cache &amp; reload
+        </button>
       </div>
     );
   }
@@ -259,6 +269,12 @@ export function BattleScreen() {
           <span className="chip border-amber-500/40 text-amber-400">📦 {me.supplies}</span>
           <span className="chip border-amber-300/40 text-amber-300">⚡ {me.commandPoints} CP</span>
           <span className="chip border-slate-600 text-slate-400">T{game.turn}</span>
+          <span
+            className="hidden font-mono text-[10px] text-slate-600 lg:inline"
+            title="Running build — if this is not the latest, clear your cache in Settings → Force Refresh"
+          >
+            {BUILD_LABEL}
+          </span>
           <button
             className="btn-primary ml-1 px-3 py-1.5"
             disabled={!isMyTurn}
