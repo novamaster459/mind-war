@@ -28,6 +28,8 @@ export function useHexRenderer({ map, onHover, onSelect, onZoom }: Options) {
     let disposed = false;
     const host = hostRef.current;
     if (!host) return;
+    host.style.height = '100%';
+    host.style.width = '100%';
 
     const renderer = new HexRenderer({
       onHover: (h) => cb.current.onHover?.(h),

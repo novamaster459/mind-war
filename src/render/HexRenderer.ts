@@ -104,6 +104,8 @@ export class HexRenderer {
     this.initialized = true;
     host.appendChild(this.app.canvas);
     this.app.canvas.style.display = 'block';
+    this.app.canvas.style.width = '100%';
+    this.app.canvas.style.height = '100%';
     this.app.canvas.style.touchAction = 'none';
 
     this.world.addChild(this.gfxTiles, this.gfxGrid, this.nodeLayer, this.unitLayer, this.gfxOverlay);
