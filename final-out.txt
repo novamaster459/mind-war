@@ -1,0 +1,8 @@
+click => CLICKED:▶ SKIRMISH vs AI
+click => CLICKED:⚔ DEPLOY TO BATTLEFIELD
+--- PAGE STATE ---
+{"text":"← MENU\nCOMMANDER\nvs Enemy AI\nYOUR TURN\n📦 600\n⚡ 5 CP\nT1\nEND TURN ▸\nBUILD UNITS\n🪖\nRiflemen\nINFANTRY · 1T\n100S\n🚙\nHumvee\nLIGHT ARMOR · 2T\n250S\n🛡️\nAbrams MBT\nHEAVY ARMOR · 3T\n550S 1CP\n💥\nPaladin SPG\nARTILLERY · 3T\n450S 1CP\n✈️\nRaptor Jet\nAIR SUPPORT · 3T\n500S 2CP\nGENERAL POWERS\nRecruit · 0 XP\n✈️\nAIRSTRIKE\n4CP\n🔒\nEMP\n3CP\n📦\nSUPPLY\n2CP\n🔒\nARTILLERY\n5CP\n📡\nRECON\n2CP\n🔒\nREPAIR\n3CP","canvases":2,"buttons":["← Menu","End Turn ▸","🪖RiflemenInfantry · 1T100S","🚙HumveeLight Armor · 2T250S","🛡️Abrams MBTHeavy Armor · 3T550S 1CP","💥Paladin SPGArtillery · 3T450S 1CP","✈️Raptor JetAir Support · 3T500S 2CP","✈️Airstrike4CP","🔒EMP3CP","📦Supply2CP","🔒Artillery5CP","📡Recon2CP"]}
+--- PROBLEMS (10) ---
+LOG.warning: The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+LOG.warning: [.WebGL-0x5fac017b5400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+LOG.warning: [.WebGL-0x5fac017b5400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
