@@ -287,7 +287,7 @@ export function BattleScreen() {
 
       {/* Body */}
       <div className="relative flex min-h-0 flex-1">
-        <div ref={hostRef} className="relative min-w-0 flex-1" />
+        <div ref={hostRef} className="relative min-w-0 flex-1 min-h-0" />
 
         {targetingPower && (
           <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded-md border border-amber-400 bg-amber-500/20 px-4 py-1.5 font-mono text-xs uppercase tracking-widest text-amber-300 animate-pulse-glow">
